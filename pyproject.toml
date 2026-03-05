@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=69,<77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "select3"
+version = "0.1.0"
+description = "Django form widgets for Select3 (no Alpine.js)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["Django>=4.2"]
+
+license = {text = "MIT"}
+
+keywords = ["django", "forms", "widgets", "select", "combobox", "multiselect"]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: Django",
+  "Framework :: Django :: 4.2",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries",
+]
+
+[project.urls]
+Homepage = "https://github.com/OWNER/django-select3"
+Repository = "https://github.com/OWNER/django-select3"
+Issues = "https://github.com/OWNER/django-select3/issues"
+Changelog = "https://github.com/OWNER/django-select3/releases"
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8",
+  "pytest-django>=4",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+# This repository stores the Django app directly in this folder.
+# Map the Python package name `select3` to this directory.
+package-dir = {"select3" = "."}
+
+packages = ["select3"]
+
+[tool.setuptools.package-data]
+select3 = [
+  "templates/**/*",
+  "static/**/*",
+]
+
+[tool.setuptools.exclude-package-data]
+select3 = [
+  "assets/*",
+  "tests/*",
+  "pyproject.toml",
+  "MANIFEST.in",
+]

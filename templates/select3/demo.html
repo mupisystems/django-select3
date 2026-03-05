@@ -1,0 +1,78 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Select3 Demo</title>
+
+    {# Standalone Select3 CSS bundle (includes Tailwind utilities used by this demo + widgets). #}
+    <link href="{% static 'select3/select3-bundle.css' %}" rel="stylesheet">
+  </head>
+
+  <body class="bg-gray-50">
+    <div class="p-6">
+      <div class="max-w-5xl">
+        <h1 class="text-xl font-semibold text-gray-900">Select3 Widgets Demo</h1>
+        <p class="text-sm text-gray-600 mt-1">Página de teste interna para validar HTML/JS dos widgets.</p>
+
+        <form method="post" class="mt-6 space-y-6">
+          {% csrf_token %}
+
+          {# Used by Select3ComboboxWidget(options_element_id=...) #}
+          <script type="application/json" id="select3_demo_status_big_options">
+            [
+              {"value": "A", "label": "Ativo (via element)"},
+              {"value": "I", "label": "Inativo (via element)"},
+              {"value": "B", "label": "Bloqueado (via element)"},
+              {"value": "T", "label": "Teste (via element)"}
+            ]
+          </script>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              {{ form.status }}
+              {{ form.status_big }}
+              {{ form.country }}
+              {{ form.state }}
+              {{ form.city }}
+            </div>
+
+            <div class="space-y-4">
+              {{ form.tags }}
+              {{ form.services }}
+              {{ form.cities_multi }}
+
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-sm font-semibold text-gray-900">Notas rápidas</div>
+                <ul class="mt-2 text-sm text-gray-700 list-disc ml-5 space-y-1">
+                  <li><span class="font-medium">Forward:</span> Estado depende de País, Cidade depende de Estado.</li>
+                  <li><span class="font-medium">AJAX (mock):</span> endpoints em <code>{% url 'select3:mock_services' %}</code> etc. (JSON <code>{results: [...], pagination: {more: bool}}</code>).</li>
+                  <li><span class="font-medium">Multi:</span> valores são enviados via múltiplos hidden inputs.</li>
+                  <li><span class="font-medium">Static + options_element_id:</span> opções carregadas de um <code>&lt;script type="application/json"&gt;</code>.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-primary/20">Enviar (POST)</button>
+            <a href="" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-primary/20">Reset</a>
+          </div>
+        </form>
+
+        {% if parsed is not None %}
+          <div class="mt-8 rounded-lg border border-gray-200 bg-white">
+            <div class="border-b border-gray-200 px-4 py-3">
+              <div class="text-sm font-semibold text-gray-900">POST parseado (cleaned_data)</div>
+            </div>
+            <pre class="p-4 text-xs overflow-auto">{{ parsed|pprint }}</pre>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Select3 widgets Media (JS part only) #}
+    {{ form.media.js }}
+  </body>
+</html>

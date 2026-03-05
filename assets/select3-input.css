@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/*
+  Select3 bundle entry.
+
+  The published Python package ships a prebuilt `static/select3/select3-bundle.css`.
+  This file exists for maintainers who want to regenerate that bundle.
+*/
+
+:root {
+  --select3-primary: var(--color-primary, #3b82f6);
+  --select3-primary-hover: var(--color-primary-hover, #2563eb);
+  --select3-primary-light: color-mix(in oklab, var(--select3-primary) 20%, transparent);
+
+  --select3-border: #d1d5db;
+  --select3-border-hover: #9ca3af;
+  --select3-border-focus: var(--select3-primary);
+
+  --select3-bg: #fff;
+  --select3-bg-hover: #f9fafb;
+  --select3-bg-disabled: #f3f4f6;
+
+  --select3-text: #111827;
+  --select3-text-muted: #6b7280;
+  --select3-placeholder: #9ca3af;
+
+  --select3-dropdown-bg: #fff;
+  --select3-dropdown-border: #e5e7eb;
+  --select3-dropdown-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
+
+  --select3-option-hover: #f9fafb;
+  --select3-option-selected-bg: var(--select3-primary);
+  --select3-option-selected-text: #fff;
+
+  --select3-badge-default-bg: #6b7280;
+  --select3-badge-default-text: #fff;
+
+  --select3-height: 42px;
+  --select3-dropdown-max-height: 240px;
+  --select3-border-radius: 0.5rem;
+  --select3-z-index: 9999;
+}
+
+[x-cloak],
+[data-select3-cloak] {
+  display: none !important;
+}
+
+/* Compatibility helpers for existing templates. */
+.bg-brand-primary {
+  background-color: var(--select3-primary) !important;
+}
+.bg-brand-primary\/10 {
+  background-color: color-mix(in oklab, var(--select3-primary) 10%, transparent) !important;
+}
+.hover\:bg-brand-primary:hover {
+  background-color: var(--select3-primary-hover) !important;
+}
+.text-brand-primary {
+  color: var(--select3-primary) !important;
+}
+.hover\:text-brand-primary:hover {
+  color: var(--select3-primary-hover) !important;
+}
+.hover\:text-brand-primary\/80:hover {
+  color: color-mix(in oklab, var(--select3-primary) 80%, transparent) !important;
+}
+.border-brand-primary,
+.focus-within\:border-brand-primary:focus-within,
+.focus\:border-brand-primary:focus {
+  border-color: var(--select3-primary) !important;
+}
+.ring-brand-primary {
+  --tw-ring-color: var(--select3-primary) !important;
+}
+.ring-brand-primary\/20 {
+  --tw-ring-color: color-mix(in oklab, var(--select3-primary) 20%, transparent) !important;
+}
+.focus-within\:ring-brand-primary:focus-within {
+  --tw-ring-color: var(--select3-primary) !important;
+}
+.focus-within\:ring-brand-primary\/20:focus-within {
+  --tw-ring-color: color-mix(in oklab, var(--select3-primary) 20%, transparent) !important;
+}
+.focus\:ring-brand-primary:focus {
+  --tw-ring-color: var(--select3-primary) !important;
+}
+.focus\:ring-brand-primary\/20:focus {
+  --tw-ring-color: color-mix(in oklab, var(--select3-primary) 20%, transparent) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --select3-border: #4b5563;
+    --select3-border-hover: #6b7280;
+    --select3-bg: #1f2937;
+    --select3-bg-hover: #374151;
+    --select3-bg-disabled: #111827;
+    --select3-text: #f9fafb;
+    --select3-text-muted: #d1d5db;
+    --select3-placeholder: #9ca3af;
+    --select3-dropdown-bg: #1f2937;
+    --select3-dropdown-border: #374151;
+    --select3-option-hover: #374151;
+  }
+}
+
+/* Optional brand overrides used in eAgenda (safe to keep; opt-in via data-domain). */
+[data-domain="minhaagendavirtual.com.br"] {
+  --select3-primary: #009da0;
+  --select3-primary-hover: #007a7c;
+}
+
+[data-domain="eagenda.com.br"] {
+  --select3-primary: #001f54;
+  --select3-primary-hover: #001439;
+}
+
+.select3-theme-dashboard {
+  --select3-primary: var(--color-primary, #001f54);
+}
+
+.select3-theme-client {
+  --select3-primary: var(--color-primary, #009da0);
+}
+
+.select3-theme-landpage {
+  --select3-primary: var(--color-primary, #fe6a4a);
+}
+
+.select3-high-contrast {
+  --select3-border: #000;
+  --select3-text: #000;
+  --select3-primary: #0056b3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combobox-wrapper * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
