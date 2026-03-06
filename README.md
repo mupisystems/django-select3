@@ -37,6 +37,16 @@ Durante o desenvolvimento local (a partir deste repo), instale em modo editável
 pip install -e .
 ```
 
+## Implementação em um projeto Django
+
+O Select3 é uma biblioteca de widgets, basta adicionar o app, usar os widgets no form e renderizar o `{{ form.media }}`.
+
+Durante o desenvolvimento local (a partir deste repo), use instalação editável:
+
+```bash
+python -m pip install -e .
+```
+
 1) Garanta que `select3` esteja no `INSTALLED_APPS`.
 
 2) Garanta que seu template renderize os assets dos widgets.
@@ -77,27 +87,38 @@ SELECT3_WIDGETS_EXTRA_JS = (
 
 Esses arquivos são adicionados **depois** dos assets padrão no `{{ form.media }}`.
 
-## Build isolado (CSS standalone)
+### Sobrescrever cores (tema)
 
-Se você quiser usar o Select3 sem depender do CSS geral do projeto (ex.: bundles do dashboard/appointment), existe um entrypoint Tailwind dedicado que gera um bundle com:
+O CSS do Select3 é themeável por CSS variables. A principal é `--select3-primary`.
 
-- utilitários Tailwind usados pelos templates/JS do Select3
-- o CSS core do componente (variáveis + helpers)
+Por padrão, ela é definida como:
 
-O pacote Python **já inclui** o bundle pronto em `select3/static/select3/select3-bundle.css`.
+- `--select3-primary: var(--color-primary, #3b82f6);`
 
-Rebuild (opcional, minificado) — útil apenas para quem mantém o pacote:
+Ou seja: você pode definir `--select3-primary` diretamente, ou (se preferir) definir `--color-primary` no seu design system.
 
-`npx @tailwindcss/cli -i ./assets/select3-input.css -o ./static/select3/select3-bundle.css --content './templates/**/*.html' --content './static/select3/select3-widgets.js' --minify`
+Exemplo (crie `css/select3-overrides.css` e registre via `SELECT3_WIDGETS_EXTRA_CSS`):
 
-Output:
+```css
+:root {
+  --select3-primary: #16a34a;
+  /* alternativa: --color-primary: #16a34a; */
+}
+```
 
-- `select3/static/select3/select3-bundle.css`
+Se quiser aplicar apenas em uma área da página (escopo), use um wrapper:
 
-Para fazer o widget usar esse bundle via `{{ form.media }}`:
+```css
+.select3-scope {
+  --select3-primary: #9333ea;
+}
+```
 
-```py
-SELECT3_WIDGETS_BUNDLE_CSS = "select3/select3-bundle.css"
+```django
+<div class="select3-scope">
+  {{ form.media }}
+  {{ form.as_p }}
+</div>
 ```
 
 ## Conteúdo dinâmico (HTMX / modais / swaps)
@@ -134,22 +155,6 @@ window.select3Widgets.destroy(el)       // um widget root
 window.select3Widgets.destroyAll(scope) // scope/container
 ```
 
-3) (Opcional) Rota de demo.
-
-Se quiser usar a tela de demonstração local:
-
-```py
-# crm/urls.py (ou onde fizer sentido)
-from django.urls import include, path
-
-urlpatterns = [
-    # ...
-    path("select3/", include("select3.urls")),
-]
-```
-
-Depois acesse `/select3/demo/`.
-
 ## Uso (exemplos)
 
 Exemplo completo com as 4 variações:
@@ -180,7 +185,7 @@ class ExampleForm(forms.Form):
         label="Estado",
         required=False,
         widget=Select3ComboboxAjaxWidget(
-            ajax_url="select3:mock_states",
+        ajax_url="myapp:states_autocomplete",  # ou "/api/states/"
             placeholder="Busque estado...",
             min_search_length=0,
             allow_clear=True,
@@ -192,7 +197,7 @@ class ExampleForm(forms.Form):
         label="Cidade",
         required=False,
         widget=Select3ComboboxAjaxWidget(
-            ajax_url="select3:mock_cities",
+        ajax_url="myapp:cities_autocomplete",  # ou "/api/cities/"
             placeholder="Busque cidade...",
             min_search_length=2,
             allow_clear=True,
@@ -215,7 +220,7 @@ class ExampleForm(forms.Form):
         label="Serviços",
         required=False,
         widget=Select3MultiSelectAjaxWidget(
-            ajax_url="select3:mock_countries",
+        ajax_url="myapp:services_autocomplete",  # ou "/api/services/"
             placeholder="Digite para buscar...",
             min_search_length=2,
             forward={"city": "city"},
@@ -425,10 +430,3 @@ Como funciona:
 Limitação atual:
 
 - Se o “pai” tiver múltiplos inputs com o mesmo `name` (caso comum de multi), o forward hoje tende a pegar apenas um valor (usa `querySelector`, não `querySelectorAll`).
-
-## Testes
-
-```bash
-pip install -e ".[test]"
-pytest -q
-```

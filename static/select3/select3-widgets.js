@@ -20,100 +20,6 @@
   //   window.select3WidgetsConfig = { observe: false };
   const CONFIG = (window.select3WidgetsConfig = window.select3WidgetsConfig || {});
 
-  // Built-in inline SVG icons (no external dependencies).
-  // Contract: AJAX options may include `icon` as one of these keys.
-  const ICONS = Object.assign(Object.create(null), {
-    scissors: {
-      viewBox: '0 0 24 24',
-      paths: [
-        'M20 4L8 16',
-        'M8 8L20 20',
-        'M6.5 6.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Z',
-        'M6.5 17.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Z',
-      ],
-    },
-    user: {
-      viewBox: '0 0 24 24',
-      paths: ['M20 21a8 8 0 0 0-16 0', 'M12 11a4 4 0 1 0 0-8a4 4 0 0 0 0 8Z'],
-    },
-    sparkles: {
-      viewBox: '0 0 24 24',
-      paths: [
-        'M12 2l1.2 3.6L17 7l-3.8 1.4L12 12l-1.2-3.6L7 7l3.8-1.4L12 2Z',
-        'M19 10l.7 2.1L22 13l-2.3.9L19 16l-.7-2.1L16 13l2.3-.9L19 10Z',
-        'M5 13l.7 2.1L8 16l-2.3.9L5 19l-.7-2.1L2 16l2.3-.9L5 13Z',
-      ],
-    },
-    spa: {
-      viewBox: '0 0 24 24',
-      paths: [
-        'M12 21c-6 0-9-4.5-9-10c4.5.5 9 3.5 9 10Z',
-        'M12 21c6 0 9-4.5 9-10c-4.5.5-9 3.5-9 10Z',
-        'M12 21V11',
-      ],
-    },
-    stethoscope: {
-      viewBox: '0 0 24 24',
-      paths: [
-        'M6 3v6a6 6 0 0 0 12 0V3',
-        'M8 3v6',
-        'M16 3v6',
-        'M18 16a3 3 0 1 0 0 6a3 3 0 0 0 0-6Z',
-        'M18 16v-3a6 6 0 0 0-12 0v1',
-      ],
-    },
-    message: {
-      viewBox: '0 0 24 24',
-      paths: ['M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z'],
-    },
-    truck: {
-      viewBox: '0 0 24 24',
-      paths: [
-        'M3 7h11v10H3V7Z',
-        'M14 10h4l3 3v4h-7v-7Z',
-        'M7 19a2 2 0 1 0 0-4a2 2 0 0 0 0 4Z',
-        'M18 19a2 2 0 1 0 0-4a2 2 0 0 0 0 4Z',
-      ],
-    },
-  });
-
-  function registerIcons(iconMap) {
-    if (!iconMap || typeof iconMap !== 'object') return;
-    for (const [key, def] of Object.entries(iconMap)) {
-      if (!key) continue;
-      if (!def || typeof def !== 'object') continue;
-      const paths = Array.isArray(def.paths) ? def.paths.filter((p) => typeof p === 'string' && p) : null;
-      if (!paths || !paths.length) continue;
-      ICONS[String(key)] = {
-        viewBox: typeof def.viewBox === 'string' && def.viewBox ? def.viewBox : '0 0 24 24',
-        paths,
-      };
-    }
-  }
-
-  function createIconSvg(iconName, color) {
-    if (!iconName) return null;
-    const def = ICONS[String(iconName)] || null;
-    if (!def) return null;
-
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', def.viewBox || '0 0 24 24');
-    svg.setAttribute('width', '16');
-    svg.setAttribute('height', '16');
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', color || 'currentColor');
-    svg.setAttribute('stroke-width', '2');
-    svg.setAttribute('stroke-linecap', 'round');
-    svg.setAttribute('stroke-linejoin', 'round');
-    svg.style.flexShrink = '0';
-    for (const d of def.paths || []) {
-      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      p.setAttribute('d', d);
-      svg.appendChild(p);
-    }
-    return svg;
-  }
-
   function parseJsonSafe(raw, fallback) {
     if (!raw) return fallback;
     try {
@@ -129,9 +35,6 @@
       .map((item) => ({
         value: String(item.id ?? item.value ?? ''),
         label: String(item.text ?? item.label ?? ''),
-        color: item.color,
-        icon: item.icon,
-        textColor: item.textColor,
       }))
       .filter((o) => o.value !== '');
   }
@@ -732,17 +635,6 @@
         const opt = options.find((o) => String(o.value) === String(id));
         const badge = document.createElement('span');
         badge.className = 'inline-flex items-center gap-1 px-2 rounded text-xs font-medium transition-all duration-150 bg-brand-primary/10 text-brand-primary h-[26px] min-h-[26px]';
-        const hasCustomColor = !!(opt && opt.color);
-        const fg = hasCustomColor ? (opt.textColor || '#ffffff') : '';
-        if (hasCustomColor) {
-          badge.style.backgroundColor = opt.color;
-          badge.style.color = fg;
-        }
-
-        if (opt && opt.icon) {
-          const iconEl = createIconSvg(opt.icon, hasCustomColor ? fg : (opt.color || null));
-          if (iconEl) badge.appendChild(iconEl);
-        }
 
         const text = document.createElement('span');
         text.className = 'max-w-[160px] truncate flex items-center';
@@ -752,7 +644,6 @@
         btn.type = 'button';
         btn.className = 'inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-black/10 transition-colors ml-0.5';
         btn.title = 'Remover';
-        if (hasCustomColor) btn.style.color = fg;
         btn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>';
         btn.addEventListener('click', (ev) => {
           ev.preventDefault();
@@ -822,10 +713,6 @@
 
         const content = btn.querySelector('[data-select3-option-content]');
         if (content) {
-          if (opt.icon) {
-            const iconEl = createIconSvg(opt.icon, opt.color || '#6b7280');
-            if (iconEl) content.appendChild(iconEl);
-          }
           const labelEl = document.createElement('span');
           labelEl.className = 'truncate';
           labelEl.textContent = opt.label;
@@ -963,15 +850,6 @@
         const opt = getSelectedOption(id);
         const badge = document.createElement('span');
         badge.className = 'inline-flex items-center gap-1 px-2 rounded text-xs font-medium transition-all duration-150 bg-brand-primary/10 text-brand-primary h-[26px] min-h-[26px]';
-        if (opt && opt.color) {
-          badge.style.backgroundColor = opt.color;
-          badge.style.color = opt.textColor || '#ffffff';
-        }
-
-        if (opt && opt.icon) {
-          const iconEl = createIconSvg(opt.icon, (opt && opt.color) ? (opt.textColor || '#ffffff') : (opt.color || null));
-          if (iconEl) badge.appendChild(iconEl);
-        }
 
         const text = document.createElement('span');
         text.className = 'max-w-[160px] truncate flex items-center';
@@ -1065,10 +943,6 @@
 
         const content = btn.querySelector('[data-select3-option-content]');
         if (content) {
-          if (opt.icon) {
-            const iconEl = createIconSvg(opt.icon, opt.color || '#6b7280');
-            if (iconEl) content.appendChild(iconEl);
-          }
           const labelEl = document.createElement('span');
           labelEl.className = 'truncate';
           labelEl.textContent = opt.label;
@@ -1161,10 +1035,6 @@
 
               const content = btn.querySelector('[data-select3-option-content]');
               if (content) {
-                if (opt.icon) {
-                  const iconEl = createIconSvg(opt.icon, opt.color || '#6b7280');
-                  if (iconEl) content.appendChild(iconEl);
-                }
                 const labelEl = document.createElement('span');
                 labelEl.className = 'truncate';
                 labelEl.textContent = opt.label;
@@ -1367,7 +1237,6 @@
   NS.initAll = initAll;
   NS.destroyAll = destroyAll;
   NS.destroy = destroyRoot;
-  NS.registerIcons = registerIcons;
 
   function startObserver() {
     if (CONFIG.observe === false) return null;

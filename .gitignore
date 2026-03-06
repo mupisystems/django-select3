@@ -24,3 +24,6 @@ node_modules/
 .DS_Store
 .vscode/
 .idea/
+
+# Databases
+db.sqlite3

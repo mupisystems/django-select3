@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "select3"
 version = "0.1.0"
-description = "Django form widgets for Select3 (no Alpine.js)"
+description = "django-select3 form widgets for django including comboboxes and AJAX"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["Django>=4.2"]
+dependencies = ["Django>=4.2.10"]
 
 license = {text = "MIT"}
 
@@ -28,16 +28,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/OWNER/django-select3"
-Repository = "https://github.com/OWNER/django-select3"
-Issues = "https://github.com/OWNER/django-select3/issues"
-Changelog = "https://github.com/OWNER/django-select3/releases"
-
-[project.optional-dependencies]
-test = [
-  "pytest>=8",
-  "pytest-django>=4",
-]
+Homepage = "https://github.com/mupisystems/django-select3"
+Repository = "https://github.com/mupisystems/django-select3"
+Issues = "https://github.com/mupisystems/django-select3/issues"
+Changelog = "https://github.com/mupisystems/django-select3/releases"
 
 [tool.setuptools]
 include-package-data = true
@@ -58,6 +52,8 @@ select3 = [
 select3 = [
   "assets/*",
   "tests/*",
+  "LICENSE",
+  "README.md",
   "pyproject.toml",
   "MANIFEST.in",
 ]
