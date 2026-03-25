@@ -17,9 +17,9 @@ Widgets disponíveis (4 variações):
 
 Arquivos importantes:
 
-- CSS (standalone): `select3/static/select3/select3-bundle.css`
-- JS (standalone): `select3/static/select3/select3-widgets.js` (namespace `window.select3Widgets`)
-- Templates: `select3/templates/select3/widgets/*.html`
+- CSS interno: `static/select3/select3-bundle.css`
+- JS interno: `static/select3/select3-widgets.js` (namespace `window.select3Widgets`)
+- Templates: `templates/select3/widgets/*.html`
 
 ## Instalação / ativação
 
@@ -66,26 +66,12 @@ Exemplo (em um template qualquer onde o form aparece):
 </form>
 ```
 
-### (Opcional) CSS/JS extra para sobrescrever
+### Assets carregados pelos widgets
 
-Por padrão, os widgets carregam:
+Os widgets carregam sempre os assets internos da biblioteca:
 
 - `select3/select3-bundle.css`
 - `select3/select3-widgets.js`
-
-Se você quiser sobrescrever estilos sem mexer no CSS padrão (ou adicionar JS extra), configure no seu `settings.py`:
-
-```py
-SELECT3_WIDGETS_EXTRA_CSS = (
-  "css/select3-overrides.css",
-)
-
-SELECT3_WIDGETS_EXTRA_JS = (
-  # "js/select3-overrides.js",
-)
-```
-
-Esses arquivos são adicionados **depois** dos assets padrão no `{{ form.media }}`.
 
 ### Sobrescrever cores (tema)
 
@@ -97,7 +83,7 @@ Por padrão, ela é definida como:
 
 Ou seja: você pode definir `--select3-primary` diretamente, ou (se preferir) definir `--color-primary` no seu design system.
 
-Exemplo (crie `css/select3-overrides.css` e registre via `SELECT3_WIDGETS_EXTRA_CSS`):
+Exemplo (no seu CSS global da aplicação):
 
 ```css
 :root {
@@ -216,7 +202,7 @@ class ExampleForm(forms.Form):
         ),
     )
 
-    services = forms.MultipleChoiceField(
+    services = forms.Field(
         label="Serviços",
         required=False,
         widget=Select3MultiSelectAjaxWidget(
@@ -319,11 +305,14 @@ Args:
 - `min_search_length: int` (padrão `2`): mesma regra do combobox AJAX.
 - `forward: dict[str, str] | None`: mesma regra do combobox AJAX.
 
+Observação: como as opções vêm dinamicamente do endpoint, é comum usar esse widget com `forms.Field` ou com uma limpeza/validação customizada no servidor. Se você usar `MultipleChoiceField`, precisa garantir que os `choices` válidos existam no momento da validação.
+
 ## Contrato do endpoint AJAX
 
 O JS envia requisições `GET` com estes parâmetros:
 
 - `q`: string digitada
+- `page`: número da página quando há paginação/infinite scroll
 - `forward`: JSON url-encoded (opcional)
 
 Resposta esperada (contrato JSON):
@@ -339,11 +328,23 @@ Resposta esperada (contrato JSON):
 }
 ```
 
+Para cada item em `results`, o JS usa `id`/`text` e também aceita `value`/`label` como alternativa.
+
+Também é aceito retornar uma lista direta em vez de um objeto, por exemplo:
+
+```json
+[
+  {"id": "BR", "text": "Brasil"}
+]
+```
+
 Paginação (opcional):
 
 - `pagination.more: boolean`
 - `next_page: number | null`
 - `next: string | null` (URL pronta para a próxima página)
+- `page` + `total_pages`
+- `count` + `page` + `page_size`
 
 Se nenhum metadado de paginação vier, o JS usa um fallback por tamanho:
 
@@ -352,50 +353,6 @@ Se nenhum metadado de paginação vier, o JS usa um fallback por tamanho:
 - Para quando `results` vier vazio ou com menos itens que o `page_size`
 
 Esse fallback pode causar 1 request extra no final quando o total é múltiplo exato do `page_size`.
-
-Campos extras (opcionais) por item também são aceitos hoje e podem ser usados no futuro: `color`, `icon`, `textColor`.
-
-### Ícones (sem dependências externas)
-
-O `select3-widgets.js` não depende de Lucide/Font Awesome. Em vez disso, ele suporta um conjunto pequeno de ícones SVG inline embutidos.
-
-Para usar, retorne `icon` com uma destas chaves:
-
-- `scissors`
-- `user`
-- `sparkles`
-- `spa`
-- `stethoscope`
-- `message`
-- `truck`
-
-#### Registrar ícones customizados
-
-Se você quiser outros ícones além dos embutidos, você pode registrar (ou sobrescrever) ícones via JS, sem depender de nenhum pack:
-
-```html
-<script>
-  // Deve rodar antes de usar os widgets na página
-  window.select3Widgets = window.select3Widgets || {};
-  // Após carregar static/js/select3-widgets.js:
-  window.select3Widgets.registerIcons({
-    calendar: {
-      viewBox: '0 0 24 24',
-      paths: [
-        'M8 2v3',
-        'M16 2v3',
-        'M3 9h18',
-        'M5 5h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z'
-      ]
-    }
-  });
-</script>
-```
-
-E opcionalmente:
-
-- `color`: cor usada no ícone (lista) e no badge (background)
-- `textColor`: cor do texto do badge quando `color` é aplicado
 
 Exemplo de view simples:
 

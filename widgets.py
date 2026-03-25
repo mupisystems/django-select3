@@ -3,8 +3,6 @@ from __future__ import annotations
 import json
 from typing import Any, Iterable, Mapping, Optional
 
-from django.conf import settings
-from django.forms import Media
 from django.forms.widgets import Widget
 from django.http import QueryDict
 from django.urls import NoReverseMatch, reverse
@@ -91,38 +89,6 @@ class Select3BaseWidget(Widget):
         js = (
             "select3/select3-widgets.js",
         )
-
-    @property
-    def media(self):
-        """Base Media + optional extra assets configured by the host app.
-
-        Host apps can append extra CSS/JS (loaded after defaults) to override styling
-        or extend behavior without forking the templates.
-
-        Settings supported:
-          - SELECT3_WIDGETS_EXTRA_CSS: iterable[str] (static paths)
-          - SELECT3_WIDGETS_EXTRA_JS: iterable[str] (static paths)
-        """
-
-        bundle_css = getattr(settings, "SELECT3_WIDGETS_BUNDLE_CSS", None)
-        if bundle_css:
-            # Fully standalone mode: use a prebuilt bundle that already includes
-            # Tailwind utilities + select3 core component styles.
-            base = Media(css={"all": (str(bundle_css),)}, js=("select3/select3-widgets.js",))
-        else:
-            base = super().media
-
-        extra_css = getattr(settings, "SELECT3_WIDGETS_EXTRA_CSS", None)
-        extra_js = getattr(settings, "SELECT3_WIDGETS_EXTRA_JS", None)
-
-        css_files = tuple(str(x) for x in (extra_css or ()) if x)
-        js_files = tuple(str(x) for x in (extra_js or ()) if x)
-
-        if not css_files and not js_files:
-            return base
-
-        extra = Media(css={"all": css_files} if css_files else {}, js=js_files)
-        return base + extra
 
     def __init__(
         self,
