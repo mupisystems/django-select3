@@ -1,8 +1,9 @@
-"""Pytest bootstrap for the flat-layout `select3` app.
+"""Pytest bootstrap for the `django_select3` app.
 
-The Django app lives in the repository root directory (which is named
-`select3`), so we put its *parent* on ``sys.path`` to make ``import select3``
-resolve, then configure a minimal Django project for the tests.
+The package lives in the ``django_select3/`` subfolder of the repository, so
+``import django_select3`` works from the repository root regardless of the
+checkout directory name. We add the repo root to ``sys.path`` as a fallback for
+runs where the package is not installed.
 """
 from __future__ import annotations
 
@@ -13,9 +14,12 @@ import django
 from django.conf import settings
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PARENT = os.path.dirname(ROOT)
-if PARENT not in sys.path:
-    sys.path.insert(0, PARENT)
+
+try:
+    import django_select3  # noqa: F401
+except ModuleNotFoundError:
+    if ROOT not in sys.path:
+        sys.path.insert(0, ROOT)
 
 
 def pytest_configure():
@@ -26,7 +30,7 @@ def pytest_configure():
         INSTALLED_APPS=[
             "django.contrib.contenttypes",
             "django.contrib.auth",
-            "select3",
+            "django_select3",
         ],
         DATABASES={
             "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"},

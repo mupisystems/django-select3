@@ -3,7 +3,7 @@ from __future__ import annotations
 from django import forms
 from django.http import QueryDict
 
-from select3.widgets import (
+from django_select3.widgets import (
     Select3ComboboxAjaxWidget,
     Select3ComboboxWidget,
     Select3MultiSelectAjaxWidget,

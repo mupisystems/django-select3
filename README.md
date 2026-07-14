@@ -6,7 +6,7 @@ Use Select3 em qualquer `forms.Form`/`forms.ModelForm` apenas trocando o `widget
 
 O app registra CSS e JS próprios, inicializando via `data-select3`.
 
-> Nome de distribuição no PyPI: **`django-select3`**. O pacote Python importável continua sendo `select3`.
+> Nome de distribuição no PyPI: **`django-select3`**. O pacote Python importável é **`django_select3`** (`pip install django-select3` → `import django_select3`).
 
 O CSS é **autossuficiente e escopado** (todas as classes têm prefixo `s3-` e ficam sob `.s3-wrapper`/`.s3-panel`), então **não vaza reset/estilos para o resto da sua aplicação**.
 
@@ -33,7 +33,7 @@ Arquivos importantes:
 pip install django-select3
 ```
 
-Adicione `select3` ao `INSTALLED_APPS` do seu projeto Django.
+Adicione `django_select3` ao `INSTALLED_APPS` do seu projeto Django.
 
 Durante o desenvolvimento local (a partir deste repo), instale em modo editável:
 
@@ -51,7 +51,7 @@ Durante o desenvolvimento local (a partir deste repo), use instalação editáve
 python -m pip install -e .
 ```
 
-1) Garanta que `select3` esteja no `INSTALLED_APPS`.
+1) Garanta que `django_select3` esteja no `INSTALLED_APPS`.
 
 2) Garanta que seu template renderize os assets dos widgets.
 
@@ -181,7 +181,7 @@ Exemplo completo com as 4 variações:
 ```py
 from django import forms
 
-from select3.widgets import (
+from django_select3.widgets import (
     Select3ComboboxAjaxWidget,
     Select3ComboboxWidget,
     Select3MultiSelectAjaxWidget,

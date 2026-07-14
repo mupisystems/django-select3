@@ -48,26 +48,13 @@ Changelog = "https://github.com/mupisystems/django-select3/releases"
 [tool.setuptools]
 include-package-data = true
 
-# This repository stores the Django app directly in this folder.
-# Map the Python package name `select3` to this directory.
-package-dir = {"select3" = "."}
-
-packages = ["select3"]
+[tool.setuptools.packages.find]
+include = ["django_select3*"]
 
 [tool.setuptools.package-data]
-select3 = [
+django_select3 = [
   "templates/**/*",
   "static/**/*",
-]
-
-[tool.setuptools.exclude-package-data]
-select3 = [
-  "assets/*",
-  "tests/*",
-  "LICENSE",
-  "README.md",
-  "pyproject.toml",
-  "MANIFEST.in",
 ]
 
 [tool.pytest.ini_options]

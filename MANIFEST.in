@@ -1,9 +1,10 @@
 include README.md
 include LICENSE
 include pyproject.toml
-include *.py
-recursive-include templates *
-recursive-include static *
+
+recursive-include django_select3 *.py
+recursive-include django_select3/templates *
+recursive-include django_select3/static *
 
 global-exclude __pycache__
 global-exclude *.py[cod]
@@ -13,6 +14,7 @@ prune .venv
 prune __pycache__
 prune .pytest_cache
 prune assets
+prune tests
 prune .git
 prune .github
 prune .vscode
