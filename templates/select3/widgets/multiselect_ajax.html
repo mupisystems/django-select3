@@ -1,8 +1,8 @@
-{% comment %}
-Widget Select3 MultiSelect AJAX (multi - busca remota)
-NO Alpine: inicializado por `static/js/select3-widgets.js` via `data-select3`.
+{% load i18n %}{% comment %}
+Select3 MultiSelect AJAX widget (multi - remote search).
+Initialized by `static/select3/select3-widgets.js` via `data-select3`.
 
-Contexto esperado:
+Expected context:
 - select3.name, select3.id
 - select3.values (JSON array)
 - select3.label, select3.placeholder
@@ -10,12 +10,12 @@ Contexto esperado:
 - select3.min_search_length, select3.forward_json
 {% endcomment %}
 
-<div class="relative combobox-wrapper"
+<div class="s3-wrapper"
      data-select3="multiselect-ajax"
      data-select3-cloak
      data-name="{{ select3.name|escape }}"
      data-ajax-url="{{ select3.ajax_url|escape }}"
-     data-placeholder="{{ select3.placeholder|default:"Digite para buscar..."|escape }}"
+     data-placeholder="{{ select3.placeholder|default:''|escape }}"
      data-allow-clear="{{ select3.allow_clear|yesno:"true,false" }}"
      data-required="{{ select3.required|yesno:"true,false" }}"
      data-min-search-length="{% if select3.min_search_length is not None %}{{ select3.min_search_length }}{% else %}2{% endif %}"
@@ -25,44 +25,42 @@ Contexto esperado:
     <div data-select3-hidden-container></div>
 
     {% if select3.label %}
-        <label for="{{ select3.id }}" class="block text-sm font-semibold text-gray-700 mb-2 lato-bold">
+        <label for="{{ select3.id }}" class="s3-label">
             {{ select3.label }}
-            {% if select3.required %}<span class="text-red-500">*</span>{% endif %}
+            {% if select3.required %}<span class="s3-required">*</span>{% endif %}
         </label>
     {% endif %}
 
-    <div class="relative">
-        <div data-select3-anchor
-             class="min-h-10.5 w-full px-3 py-1.5 pr-20 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm cursor-text transition-all duration-200 hover:border-gray-400 focus-within:ring-2 focus-within:ring-brand-primary/20 focus-within:border-brand-primary">
+    <div class="s3-control">
+        <div class="s3-anchor" data-select3-anchor>
+            <div class="s3-field">
+                <div class="s3-badges" data-select3-badges></div>
 
-            <div class="flex flex-wrap gap-1 items-center">
-                <div data-select3-badges class="flex flex-wrap gap-1 items-center"></div>
-
-                <input data-select3-input
+                <input class="s3-multi-input"
+                       data-select3-input
                        type="text"
-                       placeholder="{{ select3.placeholder|default:"Digite para buscar..."|escape }}"
-                       class="w-full outline-none bg-transparent text-sm py-1.5"
-                       style="min-width: 120px;">
+                       role="combobox"
+                       aria-autocomplete="list"
+                       aria-expanded="false"
+                       aria-haspopup="listbox"
+                       placeholder="{{ select3.placeholder|default:''|escape }}">
             </div>
         </div>
 
-        <div class="absolute inset-y-0 right-0 flex items-center gap-1 pr-3 pointer-events-none">
-            <svg data-select3-loading hidden class="animate-spin w-4 h-4 text-brand-primary" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <div class="s3-actions">
+            <svg class="s3-spinner" data-select3-loading hidden fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="s3-spinner-track" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="s3-spinner-head" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
 
-            <button data-select3-clear hidden
-                    type="button"
-                    class="inline-flex p-0.5 hover:bg-gray-100 rounded transition-colors duration-150 cursor-pointer pointer-events-auto"
-                    title="Limpar tudo">
-                <svg class="w-4 h-4 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="s3-clear" data-select3-clear hidden type="button"
+                    aria-label="{% translate 'Clear all' %}" title="{% translate 'Clear all' %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
 
-            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 shrink-0"
-                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="s3-caret" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
         </div>

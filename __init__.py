@@ -4,7 +4,7 @@ from importlib.metadata import PackageNotFoundError, version
 
 
 try:
-	__version__ = version("select3")
+	__version__ = version("django-select3")
 except PackageNotFoundError:  # pragma: no cover
 	__version__ = "0.0.0"
 

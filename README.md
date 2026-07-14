@@ -1,10 +1,14 @@
-# select3
+# django-select3
 
-Widgets Django Forms para os componentes "Select3" — combobox e multiselect com busca AJAX, sem depender de Alpine.js.
+Widgets Django Forms para os componentes "Select3" — combobox e multiselect com busca AJAX. Sem dependências de front-end (nada de Alpine.js, jQuery ou Tailwind em runtime).
 
 Use Select3 em qualquer `forms.Form`/`forms.ModelForm` apenas trocando o `widget=...`.
 
 O app registra CSS e JS próprios, inicializando via `data-select3`.
+
+> Nome de distribuição no PyPI: **`django-select3`**. O pacote Python importável continua sendo `select3`.
+
+O CSS é **autossuficiente e escopado** (todas as classes têm prefixo `s3-` e ficam sob `.s3-wrapper`/`.s3-panel`), então **não vaza reset/estilos para o resto da sua aplicação**.
 
 ## O que vem pronto
 
@@ -26,7 +30,7 @@ Arquivos importantes:
 ### Instalando via pip
 
 ```bash
-pip install select3
+pip install django-select3
 ```
 
 Adicione `select3` ao `INSTALLED_APPS` do seu projeto Django.
@@ -75,36 +79,65 @@ Os widgets carregam sempre os assets internos da biblioteca:
 
 ### Sobrescrever cores (tema)
 
-O CSS do Select3 é themeável por CSS variables. A principal é `--select3-primary`.
+O CSS do Select3 é themeável por CSS variables. A principal é `--s3-primary`.
 
 Por padrão, ela é definida como:
 
-- `--select3-primary: var(--color-primary, #3b82f6);`
+- `--s3-primary: var(--color-primary, #3b82f6);`
 
-Ou seja: você pode definir `--select3-primary` diretamente, ou (se preferir) definir `--color-primary` no seu design system.
+Ou seja: você pode definir `--s3-primary` diretamente, ou (se preferir) definir `--color-primary` no seu design system.
 
 Exemplo (no seu CSS global da aplicação):
 
 ```css
 :root {
-  --select3-primary: #16a34a;
+  --s3-primary: #16a34a;
   /* alternativa: --color-primary: #16a34a; */
 }
 ```
 
-Se quiser aplicar apenas em uma área da página (escopo), use um wrapper:
+Além da cor primária, outras variáveis podem ser sobrescritas (todas com valores padrão sensatos): `--s3-bg`, `--s3-text`, `--s3-muted`, `--s3-border`, `--s3-border-hover`, `--s3-hover-bg`, `--s3-danger`, `--s3-radius`, `--s3-height`, `--s3-font-size`.
+
+Se quiser aplicar apenas em uma área da página (escopo), basta definir a variável em um contêiner ancestral:
 
 ```css
-.select3-scope {
-  --select3-primary: #9333ea;
+.minha-area {
+  --s3-primary: #9333ea;
 }
 ```
 
 ```django
-<div class="select3-scope">
+<div class="minha-area">
   {{ form.media }}
   {{ form.as_p }}
 </div>
+```
+
+### Traduções / textos da interface (i18n)
+
+Os textos padrão dos widgets são em **inglês**.
+
+- No lado Python, os placeholders padrão usam `gettext_lazy`, então respeitam o `LANGUAGE_CODE`/traduções do Django. Você também pode passar `placeholder=...` diretamente em cada widget.
+- No lado JS, os textos (mensagens de "sem resultados", "carregando", etc.) podem ser sobrescritos definindo `window.select3WidgetsConfig.i18n` **antes** de carregar o script:
+
+```html
+<script>
+  window.select3WidgetsConfig = {
+    i18n: {
+      noResults: "Nenhum resultado encontrado",
+      noOptions: "Nenhuma opção disponível",
+      searching: "Buscando...",
+      minChars: "Digite pelo menos {n} caracteres para buscar",
+      loadingMore: "Carregando mais...",
+      scrollForMore: "Role para carregar mais...",
+      remove: "Remover",
+      loading: "Carregando...",
+      selectPlaceholder: "Selecione uma opção",
+      searchPlaceholder: "Busque...",
+      multiPlaceholder: "Digite para buscar...",
+    },
+  };
+</script>
 ```
 
 ## Conteúdo dinâmico (HTMX / modais / swaps)
@@ -384,6 +417,6 @@ Como funciona:
 - O JS inclui `forward` na querystring.
 - Seu endpoint usa isso para filtrar os resultados.
 
-Limitação atual:
+Múltiplos valores no “pai”:
 
-- Se o “pai” tiver múltiplos inputs com o mesmo `name` (caso comum de multi), o forward hoje tende a pegar apenas um valor (usa `querySelector`, não `querySelectorAll`).
+- Se o “pai” tiver vários inputs com o mesmo `name` (caso comum de multi), o `forward` coleta **todos** os valores. Quando há mais de um, o valor enviado para aquela chave vira um array JSON; com um único valor, vai como string. Trate os dois formatos no seu endpoint.

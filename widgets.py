@@ -7,6 +7,7 @@ from django.forms.widgets import Widget
 from django.http import QueryDict
 from django.urls import NoReverseMatch, reverse
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 
 def _json_dumps(value: Any) -> str:
@@ -111,6 +112,25 @@ class Select3BaseWidget(Widget):
         return bool(self.required)
 
 
+class _MultiValueDataMixin:
+    """Shared ``value_from_datadict`` for the multi-select widgets.
+
+    Multi-select widgets POST several inputs sharing the same ``name``. This
+    reads all of them so the value survives as a list, which is what
+    ``MultipleChoiceField``/``ModelMultipleChoiceField`` expect.
+    """
+
+    def value_from_datadict(self, data: Any, files: Any, name: str):
+        if isinstance(data, QueryDict):
+            return data.getlist(name)
+        value = data.get(name)
+        if value is None:
+            return []
+        if isinstance(value, (list, tuple)):
+            return list(value)
+        return [value]
+
+
 class Select3ComboboxWidget(Select3BaseWidget):
     template_name = "select3/widgets/combobox.html"
 
@@ -140,7 +160,7 @@ class Select3ComboboxWidget(Select3BaseWidget):
             "id": context["widget"]["attrs"].get("id", ""),
             "value": _normalize_initial(value),
             "label": self.label,
-            "placeholder": self.placeholder or "Selecione uma opção",
+            "placeholder": self.placeholder or _("Select an option"),
             "options_json": mark_safe(options_json),
             "options_element_id": self.options_element_id or "",
             "allow_clear": _coerce_bool(self.allow_clear, True),
@@ -183,7 +203,7 @@ class Select3ComboboxAjaxWidget(Select3BaseWidget):
             "id": context["widget"]["attrs"].get("id", ""),
             "value": _normalize_initial(value),
             "label": self.label,
-            "placeholder": self.placeholder or "Busque...",
+            "placeholder": self.placeholder or _("Search..."),
             "ajax_url": _resolve_ajax_url(self.ajax_url),
             "allow_clear": _coerce_bool(self.allow_clear, True),
             "required": required,
@@ -194,18 +214,8 @@ class Select3ComboboxAjaxWidget(Select3BaseWidget):
         return context
 
 
-class Select3MultiSelectWidget(Select3BaseWidget):
+class Select3MultiSelectWidget(_MultiValueDataMixin, Select3BaseWidget):
     template_name = "select3/widgets/multiselect.html"
-
-    def value_from_datadict(self, data: Any, files: Any, name: str):
-        if isinstance(data, QueryDict):
-            return data.getlist(name)
-        value = data.get(name)
-        if value is None:
-            return []
-        if isinstance(value, (list, tuple)):
-            return list(value)
-        return [value]
 
     def get_context(self, name: str, value: Any, attrs: Mapping[str, Any]):
         context = super().get_context(name, value, attrs)
@@ -218,7 +228,7 @@ class Select3MultiSelectWidget(Select3BaseWidget):
             "id": context["widget"]["attrs"].get("id", ""),
             "values": mark_safe(_json_dumps(_normalize_multi_value(value))),
             "label": self.label,
-            "placeholder": self.placeholder or "Selecione...",
+            "placeholder": self.placeholder or _("Select..."),
             "options_json": mark_safe(_json_dumps(options)),
             "allow_clear": _coerce_bool(self.allow_clear, True),
             "required": required,
@@ -226,7 +236,7 @@ class Select3MultiSelectWidget(Select3BaseWidget):
         return context
 
 
-class Select3MultiSelectAjaxWidget(Select3BaseWidget):
+class Select3MultiSelectAjaxWidget(_MultiValueDataMixin, Select3BaseWidget):
     template_name = "select3/widgets/multiselect_ajax.html"
 
     def __init__(
@@ -246,16 +256,6 @@ class Select3MultiSelectAjaxWidget(Select3BaseWidget):
         self.min_search_length = min_search_length
         self.forward = dict(forward) if forward else None
 
-    def value_from_datadict(self, data: Any, files: Any, name: str):
-        if isinstance(data, QueryDict):
-            return data.getlist(name)
-        value = data.get(name)
-        if value is None:
-            return []
-        if isinstance(value, (list, tuple)):
-            return list(value)
-        return [value]
-
     def get_context(self, name: str, value: Any, attrs: Mapping[str, Any]):
         context = super().get_context(name, value, attrs)
         field_required = context.get("widget", {}).get("required", False)
@@ -268,7 +268,7 @@ class Select3MultiSelectAjaxWidget(Select3BaseWidget):
             "id": context["widget"]["attrs"].get("id", ""),
             "values": mark_safe(_json_dumps(_normalize_multi_value(value))),
             "label": self.label,
-            "placeholder": self.placeholder or "Digite para buscar...",
+            "placeholder": self.placeholder or _("Type to search..."),
             "ajax_url": _resolve_ajax_url(self.ajax_url),
             "allow_clear": _coerce_bool(self.allow_clear, True),
             "required": required,
