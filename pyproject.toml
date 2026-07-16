@@ -15,6 +15,7 @@ license-files = ["LICENSE"]
 
 authors = [
   { name = "Luccas Daniel", email = "luccas.daniel@mupisystems.com.br" },
+  { name = "Mupi Systems", email = "contato@mupisystems.com.br" },
 ]
 
 keywords = ["django", "forms", "widgets", "select", "combobox", "multiselect", "autocomplete", "ajax"]

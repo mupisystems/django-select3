@@ -140,14 +140,16 @@ Os textos padrão dos widgets são em **inglês**.
 </script>
 ```
 
-## Conteúdo dinâmico (HTMX / modais / swaps)
+## Conteúdo dinâmico (modais / swaps / HTMX)
+
+> Nota: o Select3 **não depende de HTMX**. As requisições de busca dos widgets AJAX usam a Fetch API (AJAX) nativa do browser — não há nenhuma dependência de HTMX. Esta seção trata de **compatibilidade**: os widgets funcionam bem quando *o seu* app injeta HTML dinamicamente, seja via HTMX, modais ou swaps de qualquer biblioteca.
 
 O JS dos widgets inicializa automaticamente qualquer elemento com `data-select3`:
 
 - no carregamento da página (`DOMContentLoaded`)
 - e também quando novos elementos são inseridos no DOM (via `MutationObserver`)
 
-Ou seja: se você renderiza forms via HTMX (ou injeta HTML via modal), os widgets devem “subir” sem precisar de snippet extra.
+Ou seja: se você renderiza forms via HTMX (ou injeta HTML via modal, ou faz swap por qualquer outra ferramenta), os widgets devem “subir” sem precisar de snippet extra.
 
 ### Opt-out do observer
 
@@ -312,7 +314,7 @@ Construtor: `Select3ComboboxAjaxWidget(ajax_url=..., min_search_length=0, forwar
 
 - `forward: dict[str, str] | None`
   - Mapa `{chave_no_forward: nome_do_input_no_form}`.
-  - O JS lê o valor atual via `document.querySelector('input[name="<nome>"]')`.
+  - O JS lê o valor atual via `document.querySelectorAll('[name="<nome>"]')` — pega **todos** os elementos com aquele `name` (não só `input`), coletando todos os valores.
   - Exemplo: `forward={"state": "state"}` envia `{ "state": <valor do input name=state> }`.
 
 - `initial_label: str | None`
