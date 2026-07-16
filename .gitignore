@@ -27,3 +27,5 @@ node_modules/
 
 # Databases
 db.sqlite3
+
+.env
